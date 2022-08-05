@@ -1,30 +1,24 @@
 import Spinner from "../components/layout/Spinner";
 import RepoList from "../components/repos/RepoList";
-import { searchUser, searchRepos } from "../components/context/github/GithubActions";
-import { useEffect, useContext } from "react";
+import { getUserAndRepos } from "../components/context/github/GithubActions";
 import { useParams, Link } from "react-router-dom";
 import { FaCodepen, FaStore, FaUserFriends, FaUsers } from "react-icons/fa";
+import { useEffect, useContext } from "react";
 
 import GithubContext from "../components/context/github/GithubContext";
 
 export default function User() {
-  const { dispatch, user, repos, loading } =
-    useContext(GithubContext);
+  const { dispatch, user, repos, loading } = useContext(GithubContext);
   const { login } = useParams();
+
   useEffect(() => {
-    dispatch({ type: 'SET_LOADING' })
+    dispatch({ type: "SET_LOADING" });
     const getUserData = async () => {
-      const userData = await searchUser(login);
-      dispatch({ type: 'GET_USER', payload: userData });
-      const reposData = await searchRepos(login);
-      dispatch({ type: 'GET_REPOS', payload: reposData });
-
-    }
+      const userData = await getUserAndRepos(login);
+      dispatch({ type: "GET_USERS_AND_REPOS", payload: userData });
+    };
     getUserData();
-    searchRepos(login);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
   }, [dispatch, login]);
   const {
     name,
