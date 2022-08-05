@@ -1,5 +1,6 @@
 import Spinner from "../components/layout/Spinner";
 import RepoList from "../components/repos/RepoList";
+import { searchUser, searchRepos } from "../components/context/github/GithubActions";
 import { useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FaCodepen, FaStore, FaUserFriends, FaUsers } from "react-icons/fa";
@@ -7,14 +8,24 @@ import { FaCodepen, FaStore, FaUserFriends, FaUsers } from "react-icons/fa";
 import GithubContext from "../components/context/github/GithubContext";
 
 export default function User() {
-  const { searchUser, searchRepos, user, repos, loading } =
+  const { dispatch, user, repos, loading } =
     useContext(GithubContext);
   const { login } = useParams();
   useEffect(() => {
-    searchUser(login);
+    dispatch({ type: 'SET_LOADING' })
+    const getUserData = async () => {
+      const userData = await searchUser(login);
+      dispatch({ type: 'GET_USER', payload: userData });
+      const reposData = await searchRepos(login);
+      dispatch({ type: 'GET_REPOS', payload: reposData });
+
+    }
+    getUserData();
     searchRepos(login);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+  }, [dispatch, login]);
   const {
     name,
     type,
